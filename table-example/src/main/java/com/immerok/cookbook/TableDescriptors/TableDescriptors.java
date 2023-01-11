@@ -1,9 +1,10 @@
 package com.immerok.cookbook.TableDescriptors;
 
+import com.immerok.cookbook.TableJob;
 import org.apache.flink.table.api.TableDescriptor;
 
 import static com.immerok.cookbook.Constants.*;
-import static com.immerok.cookbook.schemas.Schemas.myStatus;
+import static com.immerok.cookbook.schemas.Schemas.*;
 
 public class TableDescriptors {
 
@@ -13,9 +14,20 @@ public class TableDescriptors {
                     .option("topic", MY_STATUS_TOPIC)
                     .option("properties.bootstrap.servers", BOOTSTRAP_SERVERS)
                     .option("properties.group.id", MY_STATUS_GROUP_ID)
-                    .option("key.fields","myUniqueID")
+                    .option("format","json")
+                    .option("json.fail-on-missing-field", "false")
+                    .option("json.ignore-parse-errors", "true")
+                    .option("properties.auto.offset.reset","latest")
+                    .build();
+
+    public static final TableDescriptor ENR_DESCRIPTOR =
+            TableDescriptor.forConnector("upsert-kafka")
+                    .schema(enrichment())
+                    .option("topic",ENRICHMENT_TPC)
+                    .option("properties.bootstrap.servers", BOOTSTRAP_SERVERS)
+                    .option("properties.group.id", ENRICHMENT_GROUP_ID)
                     .option("key.format","raw")
-                    .option("value.format","raw")
+                    .option("value.format","json")
                     .option("properties.auto.offset.reset","latest")
                     .build();
 

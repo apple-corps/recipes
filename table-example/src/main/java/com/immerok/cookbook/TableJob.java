@@ -8,8 +8,7 @@ import org.apache.flink.table.catalog.*;
 import java.util.HashMap;
 
 import static com.immerok.cookbook.Constants.*;
-import static com.immerok.cookbook.TableDescriptors.TableDescriptors.BLACKHOLE_DESCRIPTOR;
-import static com.immerok.cookbook.TableDescriptors.TableDescriptors.STATUS_DESCRIPTOR;
+import static com.immerok.cookbook.TableDescriptors.TableDescriptors.*;
 
 public class TableJob {
 
@@ -23,8 +22,9 @@ public class TableJob {
         tableEnv.registerCatalog(CATALOG_NAME,catalog);
         tableEnv.useCatalog(CATALOG_NAME);
         catalog.createDatabase(DATABASE_NAME, new CatalogDatabaseImpl(new HashMap<>(),""),false);
+        tableEnv.createTemporaryTable(ENR_SRC_TABLE_PATH, ENR_DESCRIPTOR);
         tableEnv.createTemporaryTable(SRC_TABLE_PATH, STATUS_DESCRIPTOR);
-        tableEnv.createTemporaryTable(DST_TABLE_PATH, BLACKHOLE_DESCRIPTOR);
-        tableEnv.executeSql(QUERY).print();
+
+        tableEnv.executeSql(JOIN_QUERY).print();
     }
 }

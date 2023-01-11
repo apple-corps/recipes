@@ -1,3 +1,4 @@
+import static com.immerok.cookbook.Constants.ENRICHMENT_TPC;
 import static com.immerok.cookbook.Constants.MY_STATUS_TOPIC;
 
 import com.immerok.cookbook.CookbookKafkaCluster;
@@ -29,7 +30,8 @@ public class TableJobTest {
            //props.put("delete.retention.ms", "100");
            //props.put("segment.ms", "100");
            //props.put("min.cleanable.dirty.ratio", "0.001");
-           kafka.createTopic(TopicConfig.withName(MY_STATUS_TOPIC).withAll(props).build());
+           kafka.createTopic(TopicConfig.withName(MY_STATUS_TOPIC).build());
+           kafka.createTopic(TopicConfig.withName(ENRICHMENT_TPC).withAll(props).build());
            TableJob.executeSQL();
        }
     }
