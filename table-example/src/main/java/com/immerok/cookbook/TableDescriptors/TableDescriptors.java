@@ -31,6 +31,16 @@ public class TableDescriptors {
                     .option("properties.auto.offset.reset","latest")
                     .build();
 
+    public static final TableDescriptor ENR_OUT =
+            TableDescriptor.forConnector("upsert-kafka")
+                    .schema(enrichment())
+                    .option("topic",ENRICHMENT_TST_TPC)
+                    .option("properties.bootstrap.servers", BOOTSTRAP_SERVERS)
+                    .option("properties.group.id", ENRICHMENT_GROUP_ID)
+                    .option("key.format","raw")
+                    .option("value.format","json")
+                    .option("properties.auto.offset.reset","latest")
+                    .build();
     public static final TableDescriptor BLACKHOLE_DESCRIPTOR =
             TableDescriptor.forConnector("blackhole")
                     .schema(myStatus())

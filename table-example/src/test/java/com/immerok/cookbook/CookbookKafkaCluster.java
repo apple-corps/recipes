@@ -23,12 +23,14 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
-import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
-import net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig;
-import net.mguenther.kafka.junit.SendValues;
-import net.mguenther.kafka.junit.TopicConfig;
+import net.mguenther.kafka.junit.*;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.network.Send;
+import org.apache.kafka.common.serialization.ByteArraySerializer;
 
 /** A slim wrapper around <a href="https://mguenther.github.io/kafka-junit/">kafka-junit</a>. */
 public class CookbookKafkaCluster extends EmbeddedKafkaCluster {
@@ -136,7 +138,8 @@ public class CookbookKafkaCluster extends EmbeddedKafkaCluster {
      *
      * @param event An event to send to the topic.
      */
-    private void sendEvent(String topic, byte[] event) throws UnsupportedEncodingException {
+    public void sendEvent(String topic, byte[] event) throws UnsupportedEncodingException {
+
         try {
             final SendValues<byte[]> sendRequest =
                     SendValues.to(topic, event)
@@ -150,4 +153,21 @@ public class CookbookKafkaCluster extends EmbeddedKafkaCluster {
             throw new RuntimeException(e);
         }
     }
+
+    public void sendKeyedEvent(String topic, byte[] event) throws UnsupportedEncodingException {
+        List list = List.of(new KeyValue(UUID.randomUUID().toString(),event));
+        try {
+           SendKeyValues<String,byte[]> sendKV =
+                SendKeyValues.to(topic, list)
+                        .with(
+                                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+                                "org.apache.kafka.common.serialization.ByteArraySerializer").build();
+
+            this.send(sendKV);
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

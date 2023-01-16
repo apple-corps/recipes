@@ -8,7 +8,7 @@ public class Schemas {
         return Schema.newBuilder()
                 .column("id", DataTypes.STRING().notNull())
                 .column("status", DataTypes.STRING())
-                .column("ts", DataTypes.TIMESTAMP(3))
+                .column("ts", DataTypes.TIMESTAMP(3).bridgedTo(java.sql.Timestamp.class))
                 .watermark("ts","ts")
                 //.primaryKey("id")
                 .build();
@@ -18,7 +18,7 @@ public class Schemas {
         return Schema.newBuilder()
                 .column("id", DataTypes.STRING().notNull())
                 .column("enrichment", DataTypes.STRING().notNull())
-                .column("ts",DataTypes.TIMESTAMP(3))
+                .column("ts",DataTypes.TIMESTAMP(3).bridgedTo(java.sql.Timestamp.class))
                 .primaryKey("id")
                 .watermark("ts","ts")
                 .build();
