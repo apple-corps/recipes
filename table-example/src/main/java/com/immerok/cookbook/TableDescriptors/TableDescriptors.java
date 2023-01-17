@@ -33,8 +33,8 @@ public class TableDescriptors {
 
     public static final TableDescriptor ENR_OUT =
             TableDescriptor.forConnector("upsert-kafka")
-                    .schema(enrichment())
-                    .option("topic",ENRICHMENT_TST_TPC)
+                    .schema(joined())
+                    .option("topic",ENRICHED_OUT_TPC)
                     .option("properties.bootstrap.servers", BOOTSTRAP_SERVERS)
                     .option("properties.group.id", ENRICHMENT_GROUP_ID)
                     .option("key.format","raw")

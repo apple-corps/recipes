@@ -33,14 +33,20 @@ public class TableJobTest {
            final Properties overrides = new Properties();
 
            final Properties props = new Properties();
-           //props.put("delete.retention.ms", "3000");
+           
+           //https://docs.confluent.io/platform/current/installation/configuration/topic-configs.html#confluent-value-subject-name-strategy
+           // The amount of time to retain delete tombstone markers for log compacted topics. 86400000 (1 day)
+           props.put("delete.retention.ms", "86400000");
+           // enables log compaction
            props.put("cleanup.policy", "compact");
-           //props.put("delete.retention.ms", "100");
-           //props.put("segment.ms", "100");
-           //props.put("min.cleanable.dirty.ratio", "0.001");
+           // the period of time after which Kafka will force the log to roll 604800000 (7 days)
+           props.put("segment.ms", "604800000");
+           //This configuration controls how frequently the log compactor will attempt to clean the log. Default 0.5
+           props.put("min.cleanable.dirty.ratio", "0.5");
            //kafka.createTopic(TopicConfig.withName(MY_STATUS_TOPIC).build());
-           kafka.createTopic(TopicConfig.withName(ENRICHMENT_TST_TPC).withAll(props).build());
+           kafka.createTopic(TopicConfig.withName(MY_STATUS_TOPIC).build());
            kafka.createTopic(TopicConfig.withName(ENRICHMENT_TPC).withAll(props).build());
+           kafka.createTopic(TopicConfig.withName(ENRICHED_OUT_TPC));
            //TableJob.executeSQL();
            FlinkUtil fu = new FlinkUtil();
            int i = 0;
@@ -57,7 +63,7 @@ public class TableJobTest {
                            throw new RuntimeException(e);
                        }
                        try {
-                           kafka.sendKeyedEvent(ENRICHMENT_TPC, fu.jsonTestEvent(Schemas.enrichment(), Arrays.asList(UUID.randomUUID().toString(), "friend"), Instant.now()));
+                           kafka.sendKeyedEvent(MY_STATUS_TOPIC, fu.jsonTestEvent(Schemas.myStatus(), Arrays.asList(UUID.randomUUID().toString(), "friend"), Instant.now()));
                        } catch (UnsupportedEncodingException e) {
                            throw new RuntimeException(e);
                        } catch (JsonProcessingException e) {

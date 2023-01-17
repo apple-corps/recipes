@@ -23,8 +23,8 @@ public class TableJob {
         tableEnv.useCatalog(CATALOG_NAME);
         catalog.createDatabase(DATABASE_NAME, new CatalogDatabaseImpl(new HashMap<>(),""),false);
         tableEnv.createTemporaryTable(ENR_SRC_TABLE_PATH, ENR_DESCRIPTOR);
-        //tableEnv.createTemporaryTable(SRC_TABLE_PATH, STATUS_DESCRIPTOR);
-        tableEnv.createTemporaryTable(ENR_TST_TABLE_PATH, BLACKHOLE_DESCRIPTOR);
+        tableEnv.createTemporaryTable(SRC_TABLE_PATH, STATUS_DESCRIPTOR);
+        tableEnv.createTemporaryTable(ENR_DST_TABLE_PATH, ENR_OUT);
         tableEnv.executeSql(QUERY).print();
     }
 }
