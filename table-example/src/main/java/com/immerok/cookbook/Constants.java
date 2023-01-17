@@ -23,5 +23,5 @@ public class Constants {
     public static final String ENR_DST_TABLE_PATH = "enrichmentOut";
     //public static final String QUERY = "INSERT INTO "+DST_TABLE_PATH+" SELECT * FROM "+SRC_TABLE_PATH+" WHERE TRUE";
     public static final String QUERY = "INSERT INTO "+ENR_TST_TABLE_PATH+" SELECT * FROM "+ENR_SRC_TABLE_PATH+" WHERE TRUE";
-    public static final String JOIN_QUERY = "INSERT INTO "+DST_TABLE_PATH+" SELECT * FROM "+SRC_TABLE_PATH+ " JOIN "+ENR_SRC_TABLE_PATH+" FOR SYSTEM_TIME AS OF "+SRC_TABLE_PATH+".ts"+" ON "+SRC_TABLE_PATH+".id ="+ENR_SRC_TABLE_PATH+".id";
+    public static final String JOIN_QUERY = "INSERT INTO "+ENR_DST_TABLE_PATH+" SELECT * FROM "+SRC_TABLE_PATH+ " JOIN "+ENR_SRC_TABLE_PATH+" FOR SYSTEM_TIME AS OF "+SRC_TABLE_PATH+".ts"+" ON "+SRC_TABLE_PATH+".id ="+ENR_SRC_TABLE_PATH+".id";
 }
