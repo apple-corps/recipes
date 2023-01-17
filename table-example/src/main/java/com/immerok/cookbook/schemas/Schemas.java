@@ -7,9 +7,9 @@ public class Schemas {
     public static final Schema myStatus() {
         return Schema.newBuilder()
                 .column("id", DataTypes.STRING().notNull())
-                .column("status", DataTypes.STRING())
+                .column("status", DataTypes.STRING().notNull())
                 .column("ts", DataTypes.TIMESTAMP(3).bridgedTo(java.sql.Timestamp.class))
-                .watermark("ts","ts")
+                .watermark("ts","ts - INTERVAL '30' SECOND")
                 //.primaryKey("id")
                 .build();
     }
@@ -19,8 +19,9 @@ public class Schemas {
                 .column("id", DataTypes.STRING().notNull())
                 .column("enrichment", DataTypes.STRING().notNull())
                 .column("ts",DataTypes.TIMESTAMP(3).bridgedTo(java.sql.Timestamp.class))
-                .primaryKey("id")
-                .watermark("ts","ts")
+                // unsetting kafka-upsert
+                //.primaryKey("id")
+                .watermark("ts","ts - INTERVAL '30' SECOND")
                 .build();
     }
     public static final Schema joined() {
@@ -29,8 +30,9 @@ public class Schemas {
                 .column("status", DataTypes.STRING().notNull())
                 .column("enrichment", DataTypes.STRING().notNull())
                 .column("ts",DataTypes.TIMESTAMP(3).bridgedTo(java.sql.Timestamp.class))
-                .primaryKey("id")
-                .watermark("ts","ts")
+                // unsetting for kafka
+                //.primaryKey("id")
+                .watermark("ts","ts - INTERVAL '30' SECOND")
                 .build();
     }
 }

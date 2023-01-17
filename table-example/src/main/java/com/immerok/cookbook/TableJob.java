@@ -25,6 +25,6 @@ public class TableJob {
         tableEnv.createTemporaryTable(ENR_SRC_TABLE_PATH, ENR_DESCRIPTOR);
         tableEnv.createTemporaryTable(SRC_TABLE_PATH, STATUS_DESCRIPTOR);
         tableEnv.createTemporaryTable(ENR_DST_TABLE_PATH, ENR_OUT);
-        tableEnv.executeSql(JOIN_QUERY).print();
+        tableEnv.executeSql(JOIN_QUERY_2).print();
     }
 }
