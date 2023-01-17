@@ -10,6 +10,7 @@ public class Schemas {
                 .column("status", DataTypes.STRING().notNull())
                 .column("ts", DataTypes.TIMESTAMP(3).bridgedTo(java.sql.Timestamp.class))
                 .watermark("ts","ts - INTERVAL '30' SECOND")
+                // kafka doesn't seem to support this, kafka-upsert does
                 //.primaryKey("id")
                 .build();
     }
@@ -19,8 +20,8 @@ public class Schemas {
                 .column("id", DataTypes.STRING().notNull())
                 .column("enrichment", DataTypes.STRING().notNull())
                 .column("ts",DataTypes.TIMESTAMP(3).bridgedTo(java.sql.Timestamp.class))
-                // unsetting kafka-upsert
-                //.primaryKey("id")
+                // setting kafka-upsert
+                .primaryKey("id")
                 .watermark("ts","ts - INTERVAL '30' SECOND")
                 .build();
     }
@@ -30,8 +31,8 @@ public class Schemas {
                 .column("status", DataTypes.STRING().notNull())
                 .column("enrichment", DataTypes.STRING().notNull())
                 .column("ts",DataTypes.TIMESTAMP(3).bridgedTo(java.sql.Timestamp.class))
-                // unsetting for kafka
-                //.primaryKey("id")
+                // setting for kafka-upsert
+                .primaryKey("id")
                 .watermark("ts","ts - INTERVAL '30' SECOND")
                 .build();
     }
