@@ -33,12 +33,4 @@ public class Schemas {
                 .watermark("ts","ts")
                 .build();
     }
-    
-    org.apache.flink.table.api.ValidationException: Column types of query result and sink for 'temporaryCatalog.default.enrichmentOut' do not match.
-Cause: Different number of columns.
-
-Query schema: [id: STRING NOT NULL, enrichment: STRING NOT NULL, ts: TIMESTAMP(3) *ROWTIME*]
-Sink schema:  [id: STRING, status: STRING, enrichment: STRING, ts: TIMESTAMP(3)]
-
-
 }
