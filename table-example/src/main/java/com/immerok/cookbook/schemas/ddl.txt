@@ -1,13 +1,3 @@
-       'connector' = 'kafka',
-       'topic' = 'test_topic',
-       'properties.bootstrap.servers' = 'localhost:9092',
-       'format' = 'avro-confluent',
-       'scan.startup.mode' = 'group-offsets',
-       'properties.auto.offset.reset' = 'latest',
-       'avro-confluent.url' = 'http://localhost:8081'
-'scan.startup.mode' = 'earliest-offset',
-
-
 CREATE TEMPORARY TABLE my_status (
   `id` STRING NOT NULL,
   `status` STRING NOT NULL,
@@ -68,3 +58,12 @@ SELECT
 FROM my_status s
 JOIN enrichment FOR SYSTEM_TIME AS OF s.ts AS e
 ON s.id = e.id;
+
+       'connector' = 'kafka',
+       'topic' = 'test_topic',
+       'properties.bootstrap.servers' = 'localhost:9092',
+       'format' = 'avro-confluent',
+       'scan.startup.mode' = 'group-offsets',
+       'properties.auto.offset.reset' = 'latest',
+       'avro-confluent.url' = 'http://localhost:8081'
+'scan.startup.mode' = 'earliest-offset',

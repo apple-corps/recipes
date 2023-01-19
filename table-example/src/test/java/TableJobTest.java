@@ -5,6 +5,7 @@ import com.immerok.cookbook.MiniClusterExtensionFactory;
 import com.immerok.cookbook.TableJob;
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
@@ -57,7 +58,7 @@ public class TableJobTest {
                    while (isTrue) {
                        String sameID = UUID.randomUUID().toString();
                        try {
-                           kafka.sendKeyedEvent(ENRICHMENT_TPC, fu.jsonTestEvent(Schemas.enrichment(), Arrays.asList(sameID, "foe"), Instant.now()));
+                           kafka.sendKeyedEvent(ENRICHMENT_TPC, fu.jsonTestEvent(Schemas.enrichment(), Arrays.asList(sameID, "foe"), Instant.now().minus(10, ChronoUnit.DAYS)));
                        } catch (UnsupportedEncodingException e) {
                            throw new RuntimeException(e);
                        } catch (JsonProcessingException e) {
@@ -80,8 +81,8 @@ public class TableJobTest {
 
            };
            Thread thread = new Thread(runabble);
-           thread.run();
-           //TableJob.executeSQL();
+           //thread.run();
+           TableJob.executeSQL();
       }
     }
 }
