@@ -55,15 +55,16 @@ public class TableJobTest {
                public void run() {
                    boolean isTrue = true;
                    while (isTrue) {
+                       String sameID = UUID.randomUUID().toString();
                        try {
-                           kafka.sendKeyedEvent(ENRICHMENT_TPC, fu.jsonTestEvent(Schemas.enrichment(), Arrays.asList(UUID.randomUUID().toString(), "foe"), Instant.now()));
+                           kafka.sendKeyedEvent(ENRICHMENT_TPC, fu.jsonTestEvent(Schemas.enrichment(), Arrays.asList(sameID, "foe"), Instant.now()));
                        } catch (UnsupportedEncodingException e) {
                            throw new RuntimeException(e);
                        } catch (JsonProcessingException e) {
                            throw new RuntimeException(e);
                        }
                        try {
-                           kafka.sendKeyedEvent(MY_STATUS_TOPIC, fu.jsonTestEvent(Schemas.myStatus(), Arrays.asList(UUID.randomUUID().toString(), "friend"), Instant.now()));
+                           kafka.sendKeyedEvent(MY_STATUS_TOPIC, fu.jsonTestEvent(Schemas.myStatus(), Arrays.asList(sameID, "friend"), Instant.now()));
                        } catch (UnsupportedEncodingException e) {
                            throw new RuntimeException(e);
                        } catch (JsonProcessingException e) {
