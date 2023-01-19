@@ -1,0 +1,66 @@
+       'connector' = 'kafka',
+       'topic' = 'test_topic',
+       'properties.bootstrap.servers' = 'localhost:9092',
+       'format' = 'avro-confluent',
+       'scan.startup.mode' = 'group-offsets',
+       'properties.auto.offset.reset' = 'latest',
+       'avro-confluent.url' = 'http://localhost:8081'
+
+
+
+CREATE TEMPORARY TABLE my_status (
+  `id` STRING NOT NULL,
+  `status` STRING NOT NULL,
+  `ts` TIMESTAMP(3),
+  WATERMARK FOR `ts` AS ts - INTERVAL '30' SECOND
+) WITH (
+  'connector' = 'kafka',
+  'topic' = 'my-status',
+  'properties.group.id' = 'statusGroup',
+  'properties.bootstrap.servers' = 'localhost:9092',
+  'key.format' = 'raw',
+  'key.fields' = 'id',
+  'value.format' = 'json',
+  'value.fields-include' = 'ALL'
+);
+
+CREATE TEMPORARY TABLE enrichment (
+  `id` STRING NOT NULL,
+  `enrichment` STRING NOT NULL,
+  `ts` TIMESTAMP(3),
+  WATERMARK FOR `ts` AS ts - INTERVAL '30' SECOND,
+  PRIMARY KEY (id) NOT ENFORCED
+) WITH (
+  'connector' = 'upsert-kafka',
+  'topic' = 'enrichment',
+  'properties.bootstrap.servers' = 'localhost:9092',
+  'properties.group.id' = 'enrichment',
+  'key.format' = 'raw',
+  'value.format' = 'json',
+  'value.fields-include' = 'ALL'
+);
+
+CREATE TEMPORARY TABLE joined (
+  `id` STRING NOT NULL,
+  `status` STRING NOT NULL,
+  `enrichment` STRING NOT NULL,
+  `ts` TIMESTAMP(3),
+  WATERMARK FOR `ts` AS ts - INTERVAL '15' SECOND,
+  PRIMARY KEY (id) NOT ENFORCED
+) WITH (
+  'connector' = 'upsert-kafka',
+  'properties.group.id' = 'joined',
+  'topic' = 'enriched',
+  'properties.bootstrap.servers' = 'localhost:9092',
+  'key.format' = 'raw',
+  'value.format' = 'json'
+);
+
+SELECT
+  s.id,
+  s.status,
+  e.enrichment,
+  s.ts
+FROM my_status s
+JOIN enrichment FOR SYSTEM_TIME AS OF s.ts AS e
+ON s.id = e.id;

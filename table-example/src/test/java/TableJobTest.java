@@ -79,8 +79,8 @@ public class TableJobTest {
 
            };
            Thread thread = new Thread(runabble);
-           thread.start();
-           TableJob.executeSQL();
+           thread.run();
+           //TableJob.executeSQL();
       }
     }
 }
