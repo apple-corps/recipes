@@ -1,6 +1,22 @@
+CREATE TEMPORARY TABLE `temporaryCatalog`.`default`.`enrichmentIn` (
+  `id` VARCHAR(2147483647) NOT NULL,
+  `enrichment` VARCHAR(2147483647) NOT NULL,
+  `ts` TIMESTAMP(3),
+  WATERMARK FOR `ts` AS `ts` - INTERVAL '30' SECOND,
+  CONSTRAINT `PK_id` PRIMARY KEY (`id`) NOT ENFORCED
+) WITH (
+  'properties.bootstrap.servers' = 'http://127.0.0.1:9092',
+  'properties.auto.offset.reset' = 'latest',
+  'connector' = 'upsert-kafka',
+  'value.format' = 'json',
+  'key.format' = 'raw',
+  'topic' = 'enrichment',
+  'properties.group.id' = 'enrichment'
+)
+
 CREATE TEMPORARY TABLE `temporaryCatalog`.`default`.`myStatusIn` (
   `id` VARCHAR(2147483647) NOT NULL,
-  `status` VARCHAR(2147483647),
+  `status` VARCHAR(2147483647) NOT NULL,
   `ts` TIMESTAMP(3),
   WATERMARK FOR `ts` AS `ts` - INTERVAL '30' SECOND
 ) WITH (
@@ -14,25 +30,10 @@ CREATE TEMPORARY TABLE `temporaryCatalog`.`default`.`myStatusIn` (
   'json.fail-on-missing-field' = 'false'
 )
 
-CREATE TEMPORARY TABLE `temporaryCatalog`.`default`.`enrichmentIn` (
-  `id` VARCHAR(2147483647) NOT NULL,
-  `enrichment` VARCHAR(2147483647),
-  `ts` TIMESTAMP(3),
-  WATERMARK FOR `ts` AS `ts` - INTERVAL '30' SECOND,
-  CONSTRAINT `PK_id` PRIMARY KEY (`id`) NOT ENFORCED
-) WITH (
-  'properties.bootstrap.servers' = 'http://127.0.0.1:9092',
-  'properties.auto.offset.reset' = 'latest',
-  'connector' = 'upsert-kafka',
-  'value.format' = 'json',
-  'key.format' = 'raw',
-  'topic' = 'enrichment',
-  'properties.group.id' = 'enrichment'
-)
 CREATE TEMPORARY TABLE `temporaryCatalog`.`default`.`enrichmentOut` (
   `id` VARCHAR(2147483647) NOT NULL,
-  `status` VARCHAR(2147483647),
-  `enrichment` VARCHAR(2147483647),
+  `status` VARCHAR(2147483647) NOT NULL,
+  `enrichment` VARCHAR(2147483647) NOT NULL,
   `ts` TIMESTAMP(3),
   WATERMARK FOR `ts` AS `ts` - INTERVAL '30' SECOND,
   CONSTRAINT `PK_id` PRIMARY KEY (`id`) NOT ENFORCED
@@ -45,3 +46,6 @@ CREATE TEMPORARY TABLE `temporaryCatalog`.`default`.`enrichmentOut` (
   'topic' = 'enrichmentOut',
   'properties.group.id' = 'enrichment'
 )
+
+Query schema: [id: STRING NOT NULL, status: STRING NOT NULL, ts: TIMESTAMP(3) *ROWTIME*, enrichment: STRING NOT NULL]
+Sink schema:  [id: STRING, status: STRING, enrichment: STRING, ts: TIMESTAMP(3)]
