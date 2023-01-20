@@ -20,7 +20,7 @@ CREATE TEMPORARY TABLE enrichment (
   `id` STRING NOT NULL,
   `enrichment` STRING NOT NULL,
   `ts` TIMESTAMP(3),
-  WATERMARK FOR `ts` AS ts - INTERVAL '30' SECOND,
+  WATERMARK FOR `ts` AS ts - INTERVAL '11' DAYS,
   PRIMARY KEY (id) NOT ENFORCED
 ) WITH (
   'connector' = 'upsert-kafka',

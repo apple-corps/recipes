@@ -1,8 +1,9 @@
 CREATE TEMPORARY TABLE my_status (
   `id` STRING NOT NULL,
   `status` STRING NOT NULL,
-  `ts` TIMESTAMP(3),
-  WATERMARK FOR `ts` AS ts - INTERVAL '30' SECOND
+  --`ts` TIMESTAMP(3),
+  `ts` AS PROCTIME()
+  --WATERMARK FOR `ts` AS ts - INTERVAL '11' SECOND
 ) WITH (
   'connector' = 'kafka',
   'topic' = 'my-status',
@@ -20,7 +21,7 @@ CREATE TEMPORARY TABLE enrichment (
   `id` STRING NOT NULL,
   `enrichment` STRING NOT NULL,
   `ts` TIMESTAMP(3),
-  WATERMARK FOR `ts` AS ts - INTERVAL '30' SECOND,
+  --WATERMARK FOR `ts` AS ts - INTERVAL '30' SECOND,
   PRIMARY KEY (id) NOT ENFORCED
 ) WITH (
   'connector' = 'upsert-kafka',
@@ -38,7 +39,7 @@ CREATE TEMPORARY TABLE joined (
   `status` STRING NOT NULL,
   `enrichment` STRING NOT NULL,
   `ts` TIMESTAMP(3),
-  WATERMARK FOR `ts` AS ts - INTERVAL '15' SECOND,
+  --WATERMARK FOR `ts` AS ts - INTERVAL '15' SECOND,
   PRIMARY KEY (id) NOT ENFORCED
 ) WITH (
   'connector' = 'upsert-kafka',
