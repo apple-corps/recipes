@@ -1,0 +1,101 @@
+CREATE CATALOG test_catalog WITH (
+    'type' = 'table-store',
+    'warehouse' = 'file:///tmp/table-store'
+);
+
+USE CATALOG test_catalog;
+
+CREATE TABLE fts_my_status(
+  `id` STRING NOT NULL,
+  `status` STRING NOT NULL,
+  `ts` TIMESTAMP(3),
+  PRIMARY KEY (id) NOT ENFORCED
+)
+
+CREATE TEMPORARY TABLE my_status (
+  `id` STRING NOT NULL,
+  `status` STRING NOT NULL,
+  `ts` TIMESTAMP(3)
+--  PRIMARY KEY (id) NOT ENFORCED
+--  WATERMARK FOR `ts` AS ts - INTERVAL '30' SECOND
+) WITH (
+  'connector' = 'kafka',
+  'topic' = 'my-status',
+  'properties.group.id' = 'statusGroup',
+  'properties.bootstrap.servers' = 'localhost:9092',
+  'scan.startup.mode' = 'earliest-offset',
+  'properties.auto.offset.reset' = 'latest',
+  'key.format' = 'raw',
+  'key.fields' = 'id',
+  'value.format' = 'json',
+  'value.fields-include' = 'ALL'
+);
+
+CREATE TABLE fts_enrichment(
+    `id` STRING NOT NULL,
+    `status` STRING NOT NULL,
+    `ts` TIMESTAMP(3),
+    PRIMARY KEY (id) NOT ENFORCED
+)
+
+CREATE TEMPORARY TABLE enrichment (
+  `id` STRING NOT NULL,
+  `enrichment` STRING NOT NULL,
+  `ts` TIMESTAMP(3),
+  --WATERMARK FOR `ts` AS ts - INTERVAL '30' SECOND,
+  PRIMARY KEY (id) NOT ENFORCED
+) WITH (
+  'connector' = 'upsert-kafka',
+  'topic' = 'enrichment',
+  'properties.bootstrap.servers' = 'localhost:9092',
+  'properties.auto.offset.reset' = 'latest',
+  'properties.group.id' = 'enrichment',
+  'key.format' = 'raw',
+  'value.format' = 'json',
+  'value.fields-include' = 'ALL'
+);
+
+CREATE TABLE fts_joined(
+  `id` STRING NOT NULL,
+  `status` STRING NOT NULL,
+  `enrichment` STRING NOT NULL,
+  `ts` TIMESTAMP(3),
+  --WATERMARK FOR `ts` AS ts - INTERVAL '15' SECOND,
+  PRIMARY KEY (id) NOT ENFORCED
+)
+
+
+CREATE TEMPORARY TABLE joined (
+  `id` STRING NOT NULL,
+  `status` STRING NOT NULL,
+  `enrichment` STRING NOT NULL,
+  `ts` TIMESTAMP(3),
+  WATERMARK FOR `ts` AS ts - INTERVAL '15' SECOND,
+  PRIMARY KEY (id) NOT ENFORCED
+) WITH (
+  'connector' = 'upsert-kafka',
+  'properties.group.id' = 'joined',
+  'topic' = 'enriched',
+  'properties.bootstrap.servers' = 'localhost:9092',
+  'properties.auto.offset.reset' = 'latest',
+  'key.format' = 'raw',
+  'value.format' = 'json'
+);
+
+SELECT
+  s.id,
+  s.status,
+  e.enrichment,
+  s.ts
+FROM my_status s
+JOIN enrichment FOR SYSTEM_TIME AS OF s.ts AS e
+ON s.id = e.id;
+
+       'connector' = 'kafka',
+       'topic' = 'test_topic',
+       'properties.bootstrap.servers' = 'localhost:9092',
+       'format' = 'avro-confluent',
+       'scan.startup.mode' = 'group-offsets',
+       'properties.auto.offset.reset' = 'latest',
+       'avro-confluent.url' = 'http://localhost:8081'
+       'scan.startup.mode' = 'earliest-offset',
